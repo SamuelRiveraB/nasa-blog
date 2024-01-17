@@ -11,8 +11,9 @@ const apiURL = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&count=${co
 let resultsArray = []
 let favorites = {}
 
-function updateDOM() {
-    resultsArray.forEach((res) => {
+function createDOMNodes(page) {
+    const currentArray = page === 'results' ? resultsArray : Object.values(favorites)
+    currentArray.forEach((res) => {
         const card = document.createElement('div')
         card.classList.add('card')
         const anchor = document.createElement('a')
@@ -30,8 +31,13 @@ function updateDOM() {
         cardTitle.textContent = res.title
         const addBtn = document.createElement('p')
         addBtn.classList.add('clickable')
-        addBtn.textContent = 'Add to Favorites'
-        addBtn.setAttribute('onclick', `saveFavorite('${res.url}')`)
+        if (page === 'results') {
+            addBtn.textContent = 'Add to Favorites'
+            addBtn.setAttribute('onclick', `saveFavorite('${res.url}')`)
+        } else {
+            addBtn.textContent = 'Remove Favorite'
+            addBtn.setAttribute('onclick', `removeFavorite('${res.url}')`)
+        }
         const cardText = document.createElement('p')
         cardText.classList.add('card-text')
         cardText.textContent = res.explanation
@@ -51,11 +57,20 @@ function updateDOM() {
     })
 }
 
+function updateDOM(page) {
+    if(localStorage.getItem('NASAFavorites')) {
+        favorites = JSON.parse(localStorage.getItem('NASAFavorites'))
+        console.log(favorites)
+    }
+    imagesContainer.textContent = ''
+    createDOMNodes(page)
+}
+
 async function getPictures() {
     try {
         const response = await fetch(apiURL)
         resultsArray = await response.json()
-        updateDOM()
+        updateDOM('results')
     } catch (error) {
         console.log('Error: ', error)
     }
@@ -74,4 +89,10 @@ function saveFavorite(itemUrl) {
     })
 }
 
-// getPictures()
+function deleteFavorite(itemUrl) {
+    if(favorites[itemUrl]) {
+        delete favorites[itemUrl]
+        localStorage.setItem('NASAFavorites', JSON.stringify(favorites))
+        updateDOM('favorites')
+    }
+}
