@@ -96,8 +96,6 @@ body {
   font-size: 24px;
 }
 
-
-
 /* Save Confirmation */
 .save-confirmed {
   background: white;
@@ -128,8 +126,6 @@ body {
     width: 100%
   }
 
-
-
   .card-title {
     font-size: 20px;
   }
@@ -137,5 +133,4 @@ body {
   .save-confirmed {
     right: 25px;
   }
-  
 }
