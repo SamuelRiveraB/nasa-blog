@@ -11,6 +11,18 @@ const apiURL = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&count=${co
 let resultsArray = []
 let favorites = {}
 
+function showContent(page) {
+    window.scrollTo({top: 0, behavior: 'instant'})
+    if(page === 'results') {
+        resultsNav.classList.remove('hidden')
+        favoritesNav.classList.add('hidden')
+    } else {
+        favoritesNav.classList.remove('hidden')
+        resultsNav.classList.add('hidden')
+    }
+    loader.classList.add('hidden')
+}
+
 function createDOMNodes(page) {
     const currentArray = page === 'results' ? resultsArray : Object.values(favorites)
     currentArray.forEach((res) => {
@@ -64,9 +76,11 @@ function updateDOM(page) {
     }
     imagesContainer.textContent = ''
     createDOMNodes(page)
+    showContent(page)
 }
 
 async function getPictures() {
+    loader.classList.remove('hidden')
     try {
         const response = await fetch(apiURL)
         resultsArray = await response.json()
@@ -96,3 +110,4 @@ function deleteFavorite(itemUrl) {
         updateDOM('favorites')
     }
 }
+
